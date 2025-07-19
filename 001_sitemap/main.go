@@ -16,7 +16,7 @@ import (
 
 var checkList = make(map[string]*model.CheckItem)
 var siteUrl = ""
-var xmlns = "https://www.sitemaps.org/schemas/sitemap/0.9/"
+var xmlns = "http://www.sitemaps.org/schemas/sitemap/0.9"
 
 func main() {
 	err := godotenv.Load()
