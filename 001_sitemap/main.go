@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"log"
+	"net/http"
 	"net/url"
 	"os"
 	"sitemap/creator/model"
@@ -41,7 +42,13 @@ func nestUrl(targetUrl string) error {
 	log.Println("Target:" + targetUrl)
 
 	time.Sleep(1 * time.Second)
-	doc, err := goquery.NewDocument(targetUrl)
+
+	req, _ := http.NewRequest("GET", targetUrl, nil)
+	client := new(http.Client)
+	resp, _ := client.Do(req)
+	defer resp.Body.Close()
+
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
 		log.Fatal("url scraping failed")
 		return err
