@@ -54,6 +54,15 @@ func nestUrl(targetUrl string) error {
 		return err
 	}
 
+	// noindexか判定
+	robots, exists := doc.Find("head meta[name='robots']").Attr("content")
+	isNoindex := exists && strings.Contains(strings.ToLower(robots), "noindex")
+
+	if isNoindex {
+		// noindexなら、サイトマップには掲載しないためフラグを建てておく
+		checkList[targetUrl].IsNoindex = true
+	}
+
 	siteUrlParse, err := url.Parse(siteUrl)
 	doc.Find("a").Each(func(_ int, s *goquery.Selection) {
 		href, _ := s.Attr("href")
@@ -119,6 +128,11 @@ func createSiteMap() {
 	}
 
 	for _, item := range checkList {
+		if item.IsNoindex { // noindexなら、掲載しない
+			log.Println("Noindexのためスキップ:" + item.URL)
+			continue
+		}
+
 		sitemap.UrlList =
 			append(
 				sitemap.UrlList,
